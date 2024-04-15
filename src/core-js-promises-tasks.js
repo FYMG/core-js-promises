@@ -60,7 +60,7 @@ function getPromiseResult(source) {
  * [Promise.reject(1), Promise.reject(2), Promise.reject(3)]    => Promise rejected
  */
 function getFirstResolvedPromiseResult(promises) {
-  return Promise.race(promises);
+  return Promise.any(promises);
 }
 
 /**
@@ -136,8 +136,20 @@ function getAllResult(promises) {
  * [promise1, promise4, promise3] => Promise.resolved('104030')
  * [promise1, promise4, promise3, promise2] => Promise.resolved('10403020')
  */
-function queuPromises(/* promises */) {
-  throw new Error('Not implemented');
+function queuPromises(promises) {
+  let resultString = '';
+  let sequence = Promise.resolve();
+
+  promises.forEach((promise) => {
+    sequence = sequence
+      .then(() => promise)
+      .then((value) => {
+        resultString += value;
+        return resultString;
+      });
+  });
+
+  return sequence;
 }
 
 module.exports = {
